@@ -1,0 +1,269 @@
+{
+  "info": {
+    "_postman_id": "expense-tracker-api-collection",
+    "name": "Expense Tracker API",
+    "description": "Full CRUD REST API test suite for the ExpenseTrack Spring Boot + Firebase backend.\n\nBase URL: http://localhost:8080/api/expenses\n\nAll successful responses follow the envelope:\n  { \"success\": true, \"message\": \"...\", \"data\": {...} }\n\nAll error responses:\n  { \"success\": false, \"message\": \"...\", \"error\": \"...\" }",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/expenses", "type": "string" },
+    { "key": "expenseId", "value": "", "type": "string", "description": "Set this after TC01 — Create Expense" }
+  ],
+  "item": [
+    {
+      "name": "TC01 — Create Expense (Valid)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Weekly Groceries\",\n  \"description\": \"Supermarket run at BigBazaar\",\n  \"amount\": 1250.50,\n  \"category\": \"Groceries\",\n  \"paymentMethod\": \"UPI\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 201 Created', () => pm.response.to.have.status(201));",
+            "pm.test('success is true', () => pm.expect(pm.response.json().success).to.be.true);",
+            "pm.test('data.id is present', () => {",
+            "  const id = pm.response.json().data?.id;",
+            "  pm.expect(id).to.be.a('string').and.not.empty;",
+            "  pm.collectionVariables.set('expenseId', id);",
+            "});"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "TC02 — Validation: Empty Title",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"\",\n  \"amount\": 500,\n  \"category\": \"Food\",\n  \"paymentMethod\": \"Cash\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+            "pm.test('success is false', () => pm.expect(pm.response.json().success).to.be.false);"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "TC03 — Validation: Amount = 0",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Test Expense\",\n  \"amount\": 0,\n  \"category\": \"Food\",\n  \"paymentMethod\": \"Cash\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"] }
+      }]
+    },
+    {
+      "name": "TC04 — Validation: Negative Amount",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Test Expense\",\n  \"amount\": -100,\n  \"category\": \"Food\",\n  \"paymentMethod\": \"Cash\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"] }
+      }]
+    },
+    {
+      "name": "TC05 — Validation: Invalid Category",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Test Expense\",\n  \"amount\": 500,\n  \"category\": \"INVALID_CAT\",\n  \"paymentMethod\": \"Cash\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"] }
+      }]
+    },
+    {
+      "name": "TC06 — Validation: Invalid Payment Method",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Test Expense\",\n  \"amount\": 500,\n  \"category\": \"Food\",\n  \"paymentMethod\": \"BITCOIN\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"] }
+      }]
+    },
+    {
+      "name": "TC07 — Get All Expenses",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('data is array', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "TC08 — Get Expense By ID (Valid)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/{{expenseId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('data.id matches', () => pm.expect(pm.response.json().data?.id).to.equal(pm.collectionVariables.get('expenseId')));"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "TC09 — Get Expense By ID (Invalid)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/nonexistent-id-12345"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 404 Not Found', () => pm.response.to.have.status(404));",
+            "pm.test('success is false', () => pm.expect(pm.response.json().success).to.be.false);"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "TC10 — Update Expense (Valid)",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/{{expenseId}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Weekly Groceries (Updated)\",\n  \"description\": \"Updated description after price correction\",\n  \"amount\": 1350.00,\n  \"category\": \"Groceries\",\n  \"paymentMethod\": \"Debit Card\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('title updated', () => pm.expect(pm.response.json().data?.title).to.include('Updated'));"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "TC11 — Delete Expense (Valid)",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/{{expenseId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('success is true', () => pm.expect(pm.response.json().success).to.be.true);"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "TC12 — Delete Nonexistent (404)",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/nonexistent-id-99999"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 404', () => pm.response.to.have.status(404));"] }
+      }]
+    },
+    {
+      "name": "TC13 — Malformed JSON Body",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{ this is not valid json }"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"] }
+      }]
+    },
+    {
+      "name": "TC14 — Missing Required Fields (amount missing)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"No Amount\",\n  \"category\": \"Food\",\n  \"paymentMethod\": \"Cash\",\n  \"date\": \"2024-06-15\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"] }
+      }]
+    },
+    {
+      "name": "TC15 — Invalid Date Format",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Bad Date\",\n  \"amount\": 100,\n  \"category\": \"Food\",\n  \"paymentMethod\": \"Cash\",\n  \"date\": \"15-06-2024\"\n}"
+        }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"] }
+      }]
+    }
+  ]
+}
