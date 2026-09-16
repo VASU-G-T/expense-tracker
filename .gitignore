@@ -1,0 +1,59 @@
+# ===========================
+# Java / Spring Boot / Maven
+# ===========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+.mvn/timing.properties
+
+# ===========================
+# Node / React / Vite
+# ===========================
+node_modules/
+dist/
+.vite/
+.cache/
+*.local
+
+# ===========================
+# Environment / Secrets
+# ===========================
+.env
+.env.local
+.env.*.local
+firebase-service-account.json
+*-service-account.json
+private_keys/
+*.pem
+*.p12
+
+# ===========================
+# Logs
+# ===========================
+*.log
+logs/
+spring.log
+
+# ===========================
+# IDE / Editor
+# ===========================
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# ===========================
+# OS
+# ===========================
+.DS_Store
+Thumbs.db
+desktop.ini
