@@ -5,6 +5,7 @@
 **Application Name**: ExpenseTrack — Full-Stack Expense Tracker  
 **Tech Stack**: React 18, Vite, Spring Boot 3, Firebase Firestore, Chart.js  
 **Repository**: https://github.com/VASU-G-T/expense-tracker  
+**Live URL**: https://frontend-one-gray-58.vercel.app  
 
 ---
 

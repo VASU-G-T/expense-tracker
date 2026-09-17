@@ -2,9 +2,12 @@
 
 > A modern, full-stack personal expense management web application built with **React + Vite** (frontend) and **Spring Boot 3 + Firebase Firestore** (backend).
 
+🌐 **Live Demo URL**: [https://frontend-one-gray-58.vercel.app](https://frontend-one-gray-58.vercel.app)
+
 ![Tech Stack](https://img.shields.io/badge/Frontend-React_18_+_Vite-61dafb?style=flat-square&logo=react)
 ![Backend](https://img.shields.io/badge/Backend-Spring_Boot_3-6db33f?style=flat-square&logo=spring)
 ![Database](https://img.shields.io/badge/Database-Firebase_Firestore-ffca28?style=flat-square&logo=firebase)
+![Deployment](https://img.shields.io/badge/Vercel-Deployed-000000?style=flat-square&logo=vercel)
 ![Java](https://img.shields.io/badge/Java-17+-007396?style=flat-square&logo=java)
 ![Node](https://img.shields.io/badge/Node.js-v18+-339933?style=flat-square&logo=node.js)
 
